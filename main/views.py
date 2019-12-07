@@ -17,8 +17,6 @@ import datetime
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 
-from django.contrib.auth.models import Group
-
 
 #The major backend logic for online guest house booking system
 
@@ -44,6 +42,34 @@ def sign_up(request):
     else:
         form = SignupForm()
     return render(request, 'user/sign-up.html', {'form': form})
+# Fuction to edit User details
+def edit_user(request):
+    user=get_object_or_404(User,pk=request.user.pk)
+    if request.method == 'POST':
+       
+       form=UserEditForm(request.POST)
+       if form.is_valid():
+      
+          user.username=form.cleaned_data.get('username')
+          user.first_name=  form.cleaned_data.get('first_name')
+          user.last_name=form.cleaned_data.get('last_name')
+          user.email=form.cleaned_data.get('email')
+          user.save()
+          messages.info( request,"User Details Updated Succesfully")
+          return redirect("index")
+       else:
+            messages.error(request, "Invalid Form Details")
+             
+    else:
+ 
+        form =UserEditForm(initial={
+            'username':user.username,
+            'first_name':user.first_name,
+            'last_name':user.last_name,
+            'email':user.email
+        })
+    return render(request ,'user/user-edit.html',{'form':form})
+    
 
 #Function to Login in a new user
 def login_request(request):                     #request variable takes a GET or POST HTTP request
@@ -55,10 +81,6 @@ def login_request(request):                     #request variable takes a GET or
             user = authenticate(username= username, password=password)
 
             if user is not None:
-                # Checking if a user if a staff
-                if user.is_staff and not user.groups.filter(name='Staff').exists():
-                    group = Group.objects.get(name='Staff')
-                    user.groups.add(group) 
                 login(request, user)
                 messages.info(request, f"You are now logged in as {username}")
                 return redirect('index')
