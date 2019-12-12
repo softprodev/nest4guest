@@ -9,7 +9,7 @@
   box-sizing: border-box;
 }
 
-body{
+body {
   margin: 0;
 }
 
@@ -139,9 +139,15 @@ th {
         <button  class="button" type="submit"> Log In </button>
 	</form ><br><br><br><br><br><br><br><br>
 	  {% for message in messages %}
-    {% if message%}
-      <h4 align='center' style='color:red'>*{{message}}</h4>
+		{% if message%}
+
+                    <div class="alert alert-success">
+                        <a class="close" href="#" data-dismiss="alert">×</a>
+				
+					window.alert({{message}})
 		{%endif%}
+
+                    </div>
             {% endfor %}
 	
 	
