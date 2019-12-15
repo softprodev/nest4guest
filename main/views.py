@@ -26,6 +26,9 @@ from django.contrib.auth.models import Group
 def home(request):      
     return render(request=request, template_name="home.html")
 
+#Function to display the about page of the web system
+def about(request):
+    return render(request=request, template_name="about.html")
 
 #Function to Sign up new user
 def sign_up(request):
@@ -83,6 +86,10 @@ def login_request(request):                     #request variable takes a GET or
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
             user = authenticate(username= username, password=password)
+            
+            if user.is_staff or user.is_superuser:
+                messages.error(request, "Visitor's login only!")
+                return redirect('login')
 
             if user is not None:
                 # Checking if a user if a staff
@@ -137,7 +144,7 @@ def index(request):                                 #request variable takes a GE
                     start_date = form.cleaned_data['start_date']
                     end_date = form.cleaned_data['end_date']
                     if start_date > end_date or start_date < datetime.date.today():
-                        messages.warning(request, 'Pelase Enter Proper dates')
+                        messages.warning(request, 'Please Enter Proper dates')
                         return redirect('index')
                     T = PreReservation()
                     T.start_date = start_date
